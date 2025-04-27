@@ -39,6 +39,19 @@
         return `${year}${month}${day}`;
     }
 
+    function timestampToDate(timestamp) {
+        const date = new Date(timestamp * 1e3);
+        // 检查日期是否有效
+        if (isNaN(date.getTime())) {
+            return ""; // 如果日期无效，返回空字符串
+        }
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}${month}${day}`;
+    }
+
+
     function _defineProperties(target, props) {
         for (var i = 0; i < props.length; i++) {
             var descriptor = props[i];
@@ -1086,20 +1099,13 @@
             } else "bangumi" === _type ? vb = Bangumi.build() : "cheese" === _type && (vb = Cheese.build());
             return vb;
         },
-        pub_date: function base() {
+        pub_date: function pub_date() {
             var _type = type(), vb = new VideoBase;
             if ("video" === _type) {
                 var state = window.__INITIAL_STATE__, main_title = state.videoData && state.videoData.title;
-                vb = new Video(main_title, state);
-            } else if ("list" === _type) {
-                var _state = window.__INITIAL_STATE__,
-                    _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + "-" + _state.mediaListInfo.title;
-                vb = new VideoList(_main_title, _state);
-            } else if ("festival" === _type) {
-                var _state2 = window.__INITIAL_STATE__, _main_title2 = _state2.title;
-                vb = new VideoFestival(_main_title2, _state2);
-            } else "bangumi" === _type ? vb = Bangumi.build() : "cheese" === _type && (vb = Cheese.build());
-            return vb;
+                return state.videoData.pubdate
+            }
+            return 0
         },
         get_quality: function get_quality() {
             var _q = 0, _q_max = 0, _type = type();
@@ -2672,7 +2678,7 @@
     }
 
     function rpc_type() {
-        return config_config.rpc_domain.match("https://") || config_config.rpc_domain.match("http://") || config_config.rpc_domain.match(/localhost|127\.0\.0\.1/) ? "post" : "ariang";
+        return config_config.rpc_domain.match("https://") || config_config.rpc_domain.match(/localhost|127\.0\.0\.1/) ? "post" : "ariang";
     }
 
     var download_rpc_clicked = !1;
@@ -3722,9 +3728,14 @@
                                 $("#".concat(id)).select(), document.execCommand("copy") ? message_Message_success("复制成功") : message_Message_warning("复制失败");
                             }), MessageBox_alert(_msg);
                         } else {
-                            let date = formatDate($(".pubdate-ip-text").text())
+                            console.log(video.pub_date(), timestampToDate(video.pub_date()))
+                            let date = timestampToDate(video.pub_date())
                             let url = $("#video_url").attr("href"),
+                                filename = video.base().filename() + Download.url_format(url);
+                            if (date !== "") {
                                 filename = date + "-" + video.base().filename() + Download.url_format(url);
+
+                            }
                             console.log(video.base(), url, filename, type)
                             Download.download(url, filename, type);
                         }
