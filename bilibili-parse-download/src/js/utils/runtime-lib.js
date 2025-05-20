@@ -1,4 +1,5 @@
 import { _ajax } from './ajax'
+import Logger from '@/js/utils/logger'
 
 class RuntimeLib {
 
@@ -18,7 +19,7 @@ class RuntimeLib {
                 setTimeout(async () => {
                     try {
                         if (this.anyResolved) return
-                        console.log(`[Runtime Library] Start download from ${url}`)
+                        Logger.debug(`[Runtime Library] Start download from ${url}`)
                         const code = await _ajax({
                             url,
                             type: 'GET',
@@ -26,7 +27,7 @@ class RuntimeLib {
                             cache: true
                         })
                         if (this.anyResolved) return
-                        console.log(`[Runtime Library] Downloaded from ${url} , length = ${code.length}`)
+                        Logger.debug(`[Runtime Library] Downloaded from ${url} , length = ${code.length}`)
                         this.anyResolved = true
                         resolve(code)
                     } catch (err) {
@@ -68,7 +69,7 @@ if (!document.getElementById(runtime_div.id)) {
 }
 
 const iframeInvoke = (scripts, getModules) => {
-    console.log('[Runtime Library] iframe invoke scripts, size =', scripts.length)
+    Logger.debug('[Runtime Library] iframe invoke scripts, size =', scripts.length)
     // ! html
     const scriptTags = scripts.map(code => `<script>${code}</script>`).join('')
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Runtime Library</title></head><body>${scriptTags}</body></html>`
@@ -85,7 +86,7 @@ const iframeInvoke = (scripts, getModules) => {
     }, 10000)
     iframe.src = blobUrl
     iframe.onload = () => {
-        console.log('[Runtime Library] Script loaded in iframe')
+        Logger.debug('[Runtime Library] Script loaded in iframe')
         for (const getModule of getModules) {
             try {
                 getModule(iframe.contentWindow)
@@ -116,7 +117,7 @@ const initIframe = (name, ver, filename, getModule) => {
     }).finally(() => {
         if (--count === 0) {
             iframeInvoke(scripts, getModules)
-            console.log('[Runtime Library] iframe invoke complete')
+            Logger.debug('[Runtime Library] iframe invoke complete')
         }
     })
 }
@@ -131,7 +132,7 @@ const initLocal = (name, ver, filename, getModule, handleScript) => {
         const script_tag = document.createElement('script')
         script_tag.src = blob_url
         script_tag.onload = () => {
-            console.log(`[Runtime Library] Loaded ${name} from local`)
+            Logger.debug(`[Runtime Library] Loaded ${name} from local`)
             getModule(window)
             URL.revokeObjectURL(blob_url)
         }

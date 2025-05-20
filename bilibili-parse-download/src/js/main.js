@@ -11,12 +11,13 @@ import { api } from './utils/api'
 import { Download } from './utils/download'
 import { player } from './utils/player'
 import { video } from './utils/video'
+import Logger from './utils/logger'
 
 class Main {
 
     constructor() {
         /* global JS_VERSION GIT_HASH */
-        console.log(`${'\n'} %c bilibili-parse-download.user.js v${JS_VERSION} ${GIT_HASH} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;')
+        Logger.debug(`${'\n'} %c bilibili-parse-download.user.js v${JS_VERSION} ${GIT_HASH} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;')
     }
 
     init() {
@@ -226,12 +227,59 @@ class Main {
                     const filename = video.base().filename() + '.m4a'
                     Download.download(url, filename, type)
                 }
-            }
+            },
+            bilibili_card_parse() {
+                user.lazyInit(true) // init
+                const bvId = this.id; // 或 $(this).attr('id')，等价
+                video.card(bvId).then(vb => {
+                    const [type, aid, p, cid, epid] = [
+                        vb.type(),
+                        vb.aid(),
+                        vb.p(),
+                        vb.cid(),
+                        vb.epid()
+                    ]
+                    const { q } = video.get_quality()
+                    api_url = `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${config.format}&otype=json&_host=${config.host_key}&_req=${config.request_type}&_q=${config.video_quality}`
+                    const [auth_id, auth_sec] = [
+                        store.get('auth_id'),
+                        store.get('auth_sec')
+                    ]
+                    if (auth_id && auth_sec) {
+                        api_url += `&auth_id=${auth_id}&auth_sec=${auth_sec}`
+                    }
+                    api_url_temp = api_url
+
+                    Message.info('开始请求')
+                    api.get_card_url(vb, res => {
+                        if (res && !res.code) {
+                            Message.success('请求成功')
+                            res.times && Message.info(`剩余请求次数：${res.times}`)
+
+                            let url, url_2
+                            if (res.url) {
+                                url = res.url.replace('http://', 'https://')
+                                url_2 = '#'
+                            } else if (res.video && res.audio) {
+                                url = res.video.replace('http://', 'https://')
+                                url_2 = res.audio.replace('http://', 'https://')
+                            } else {
+                                Message.warning('数据错误')
+                                return
+                            }
+                            const filename = vb.pupdate() + '-' + vb.filename() + Download.url_format(url)
+                            Download.download(url, filename, 'rpc')
+                        }
+                    })
+                })
+
+            },
         }
 
         // api & click
         window.bpd = evt
         Object.entries(evt).forEach(([k, v]) => $('body').on('click', `#${k}`, v))
+        Object.entries(evt).forEach(([k, v]) => $('body').on('click', `.${k}`, v))
 
         // part of check
         $('body').on('click', 'a.router-link-active', function () {
@@ -263,9 +311,13 @@ class Main {
             }
         }, 500)
         setInterval(() => {
-            const vb = video.base()
-            if (check.aid !== vb.aid() || check.cid !== vb.cid()) {
-                check.refresh()
+            try {
+                const vb = video.base()
+                if (check.aid !== vb.aid() || check.cid !== vb.cid()) {
+                    check.refresh()
+                }
+            } catch (error) {
+
             }
         }, 1500)
     }

@@ -6,11 +6,12 @@ import { scroll } from '@/js/ui/scroll'
 import { ajax } from '@/js/utils/ajax'
 import { Download } from '@/js/utils/download'
 import { player } from '@/js/utils/player'
+import Logger from '@/js/utils/logger'
 
 import config_html from '@/html/config.html'
 
 const config = {
-    base_api: 'https://api.injahow.cn/bparse/',
+    base_api: 'https://api.func.cool/bparse',
     request_type: 'auto',
     format: 'mp4',
     host_key: '0',
@@ -214,7 +215,7 @@ function initConfig(el) {
             }
         }
     } catch {
-        console.log('初始化脚本配置')
+        Logger.debug('初始化脚本配置')
         store.set('config_str', '{}')
     }
     // 函数绑定

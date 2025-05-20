@@ -1,6 +1,7 @@
 import { video } from './utils/video'
 import { player } from './utils/player'
 import CacheFactory from './utils/cache'
+import Logger from './utils/logger'
 
 class Check {
 
@@ -18,7 +19,7 @@ class Check {
             return
         }
         this.lock = true
-        console.log('refresh...')
+        Logger.debug('refresh...')
         $('#video_download').hide()
         $('#video_download_2').hide()
         player.recover_player()
@@ -31,7 +32,7 @@ class Check {
             this.epid = vb.epid()
             this.q = video.get_quality().q
         } catch (err) {
-            console.log(err)
+            Logger.error(err)
         } finally {
             this.lock = false
         }

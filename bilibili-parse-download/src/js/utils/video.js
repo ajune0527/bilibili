@@ -1,28 +1,33 @@
 import { videoQualityMap } from '../ui/config'
 import { user } from '../user'
-import { Bangumi, Cheese, Video, VideoBase, VideoFestival, VideoList } from './video-base'
+import { Bangumi, Cheese, Video, VideoCard, VideoBase, VideoFestival, VideoList } from './video-base'
 
 
 function type() {
     const routerMap = {
-        video: '/video/',
-        list: '/list/',
-        festival: '/festival/',
-        bangumi: '/bangumi/play/', // ss / ep
-        cheese: '/cheese/play/'
+        video: /^\/video\//,
+        list: /^\/list\//,
+        festival: /^\/festival\//,
+        bangumi: /^\/bangumi\/play\//,
+        cheese: /^\/cheese\/play\//,
+        card: /\/upload\/video/,
     }
+
     for (const key in routerMap) {
-        if (location.pathname.startsWith(routerMap[key])) {
+        if (routerMap[key].test(location.pathname)) {
             return key
         }
     }
+
     return '?'
 }
 
 function base() {
     const _type = type()
     let vb = new VideoBase()
-    if (_type === 'video') {
+    if (_type === 'card') {
+        vb = new VideoCard('video')
+    } else if (_type === 'video') {
         const state = window.__INITIAL_STATE__
         const main_title = state.videoData && state.videoData.title
 
@@ -46,6 +51,17 @@ function base() {
     }
 
     return vb
+}
+
+async function card(bvid='') {
+    const res = await $.ajax({
+        type: 'GET',
+        url: `https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`,
+        dataType: 'json',
+        xhrFields: { withCredentials: true }
+    })
+    const data = res.code ? {} : res.data
+    return new VideoCard(data.title, data, data)
 }
 
 const q_map = {
@@ -124,6 +140,7 @@ function get_quality_support() {
 export const video = {
     type,
     base,
+    card,
     get_quality,
     get_quality_support
 }

@@ -4,6 +4,7 @@ import { Message, MessageBox } from './ui/message'
 import { _ajax, ajax } from './utils/ajax'
 import { QRCode, md5 } from './utils/runtime-lib'
 import { getCookie } from './utils/cookie'
+import Logger from './utils/logger'
 
 class Auth {
     constructor() {
@@ -13,7 +14,7 @@ class Auth {
         this.TV_SEC = '59b43e04ad6965f34319062b478f83dd'
     }
 
-    hasAuth(){
+    hasAuth() {
         return store.get('auth_id') && store.get('auth_sec')
     }
 
@@ -132,7 +133,7 @@ class Auth {
                     }, this.TV_SEC)
                 }).then(res => {
                     if (!res.code && res.data) {
-                        console.log('login success')
+                        Logger.info('login success')
                         is_login = 1
                         this.doAuth(res.data)
                         box.affirm()
@@ -173,7 +174,7 @@ class Auth {
                     }, this.TV_SEC)
                 }).then(res => {
                     if (!res.code && res.data) {
-                        console.log('login success')
+                        Logger.info('login success')
                         this.doAuth(res.data)
                         is_login = 1
                         this.auth_window.close()

@@ -1,5 +1,6 @@
 import CacheFactory from "./cache"
 import { _ajax } from "./ajax"
+import Logger from "./logger"
 
 const clazzMap = {}
 
@@ -14,6 +15,7 @@ class VideoBase {
         this.state = state
         // ! state.p
         this.page = state && parseInt(state.p) || 1
+        this.data = {}
     }
 
     getVideo(p) {
@@ -102,6 +104,92 @@ class VideoBase {
     isLimited() {
         return false
     }
+
+    pupdate() {
+        return ''
+    }
+}
+
+class VideoCard extends VideoBase {
+
+    constructor(main_title, state, data) {
+        super('video', main_title, state)
+        this.state = state
+        // ! state.p
+        this.page = state && parseInt(state.p) || 1
+        this.data = data
+    }
+
+    type() {
+        return this.video_type
+    }
+
+    getName() {
+        return this.main_title || ''
+    }
+
+    getFilename() {
+        return this.getName().replace(/[\/\\:*?"<>|]+/g, '')
+    }
+
+    p(p) {
+        p = parseInt(p) || 0
+        return p > 0 && p <= this.total() ? p : this.page
+    }
+
+    id(p) {
+        return this.p(p) - 1
+    }
+
+    total() {
+        return 0
+    }
+
+    title() {
+        return this.main_title
+    }
+
+    filename() {
+        return this.main_title
+    }
+
+    aid() {
+        return this.data?.aid
+    }
+
+    bvid() {
+        return this.data?.bvid
+    }
+
+    cid() {
+        return this.data?.cid
+    }
+
+    epid() {
+        return ''
+    }
+
+    needVip() {
+        return false
+    }
+
+    vipNeedPay() {
+        return false
+    }
+
+    isLimited() {
+        return false
+    }
+
+    pupdate() {
+        const date = new Date(this.data.pubdate * 1000); // 转换为毫秒
+
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0'); // 月份是0索引
+        const dd = String(date.getDate()).padStart(2, '0');
+
+        return `${yyyy}${mm}${dd}`;
+    }
 }
 
 class Video extends VideoBase {
@@ -153,7 +241,11 @@ class Video extends VideoBase {
             return this.title(p).replace(/[\/\\:*?"<>|]+/g, '')
         }
         const id = this.id(p)
-        const title = this.main_title + (this.total() > 1 ? ` P${id + 1} ${this.state.videoData.pages[id].part || ''}` : '')
+        let prefix = this.pupdate()
+        if (prefix) {
+            prefix = `${prefix}-`
+        }
+        const title = prefix + this.main_title + (this.total() > 1 ? ` P${id + 1} ${this.state.videoData.pages[id].part || ''}` : '')
         return title.replace(/[\/\\:*?"<>|]+/g, '')
     }
 
@@ -176,6 +268,20 @@ class Video extends VideoBase {
             return this.video_list[this.id(p)].cid
         }
         return this.state.videoData.pages[this.id(p)].cid
+    }
+
+    pupdate() {
+        try {
+            const date = new Date(this.state?.videoData?.pubdate * 1000); // 转换为毫秒
+
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0'); // 月份是0索引
+            const dd = String(date.getDate()).padStart(2, '0');
+
+            return `${yyyy}${mm}${dd}`;
+        } catch (error) {
+            return ""
+        }
     }
 }
 
@@ -318,12 +424,12 @@ class Bangumi extends VideoBase {
         }
 
         try {
-            console.log('location sid:', sid, 'epid:', epid)
+            Logger.debug('location sid:', sid, 'epid:', epid)
             const page_data = JSON.parse($('.toolbar').attr('mr-show'))
             main_title = page_data.msg.title
             sid = sid || page_data.msg.season_id
             epid = epid || page_data.msg.ep_id
-            console.log('mr-show get sid:', sid, 'epid:', epid)
+            Logger.debug('mr-show get sid:', sid, 'epid:', epid)
         } catch {
             console.warn('mr-show get err')
         }
@@ -545,7 +651,7 @@ class Cheese extends VideoBase {
             }
             cheeseCache.set('lock', true)
             if (!sid && !epid) {
-                console.log('get_season error')
+                Logger.error('get_season error')
                 return
             }
             _ajax({
@@ -623,6 +729,7 @@ class Cheese extends VideoBase {
 
 export {
     VideoBase,
+    VideoCard,
     Video,
     VideoList,
     VideoFestival,

@@ -179,8 +179,83 @@ function showBangumiToolbar(toolbar_class) {
     toolbar_obj.after(toolbar_obj_2)
 }
 
+function showVideoCardToolbar(toolbar_class) {
+    const toolbar_obj = $(`.${toolbar_class}`)
+    toolbar_obj.each(function () {
+        const $detail = $(this);
+        const $link = $detail.find('.bili-video-card__title a');
+        const href = $link.attr('href');
+
+        const match = href && href.match(/\/video\/([0-9A-Za-z]+)/);
+        if (match) {
+            const bvId = match[1]; // e.g. BV1ViEczpEgN
+            const $subtitle = $detail.find('.bili-video-card__subtitle');
+
+            // 创建新 span 元素
+            const $span = $('<span></span>')
+                .attr('id', bvId)
+                .attr('class', 'bilibili_card_parse')
+                .text('#' + bvId)
+                .css('margin-left', '40px'); // 可选，样式与原 span 间距保持一致
+
+            $subtitle.append($span);
+        }
+    });
+
+
+    const key = 'setting_btn';
+    const label = btn_list[key];
+    const svgHtml = svg_map[key].replaceAll('#757575', 'currentColor');
+    
+    const $floatBtn = $(`
+      <div id="${key}" class="custom-float-btn" title="${label}">
+        ${svgHtml}
+        <span>${label}</span>
+      </div>
+    `);
+    
+    $('<style>')
+      .html(`
+        .custom-float-btn {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          z-index: 99999;
+          background: #fff;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: center;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          cursor: pointer;
+          font-size: 14px;
+          color: #333;
+          transition: all 0.2s;
+        }
+        .custom-float-btn:hover {
+          background: #f5f5f5;
+        }
+        .custom-float-btn svg {
+          width: 20px;
+          height: 20px;
+          margin-right: 6px;
+          fill: currentColor;
+        }
+        .custom-float-btn span {
+          white-space: nowrap;
+        }
+      `)
+      .appendTo('head');
+    
+    // 添加到页面
+    $('body').append($floatBtn);
+}
+
 function initToolbar() {
-    if (!!$('#arc_toolbar_report')[0]) { // video
+    if (!!$('.bili-video-card__details')[0]) { // upload
+        showVideoCardToolbar('bili-video-card__details')
+    } else if (!!$('#arc_toolbar_report')[0]) { // video
         showVideoToolbar('arc_toolbar_report')
     } else if (!!$('#playlistToolbar')[0]) {  // list
         showVideoToolbar('playlistToolbar')
