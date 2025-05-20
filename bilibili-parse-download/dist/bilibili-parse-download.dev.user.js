@@ -3436,7 +3436,7 @@ function initToolbar() {
 class Main {
   constructor() {
     /* global JS_VERSION GIT_HASH */
-    logger.debug(`${'\n'} %c bilibili-parse-download.user.js v${"2.6.3"} ${"ba1981a"} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    logger.debug(`${'\n'} %c bilibili-parse-download.user.js v${"2.6.3"} ${"3680ed2"} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   init() {
     initToolbar();
