@@ -3436,7 +3436,7 @@ function initToolbar() {
 class Main {
   constructor() {
     /* global JS_VERSION GIT_HASH */
-    logger.debug(`${'\n'} %c bilibili-parse-download.user.js v${"2.6.3"} ${"adce35b"} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    logger.debug(`${'\n'} %c bilibili-parse-download.user.js v${"2.6.3"} ${"82323c5"} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   init() {
     initToolbar();
@@ -3449,7 +3449,11 @@ class Main {
     user.lazyInit();
     auth.checkLoginStatus();
     check.refresh();
-    $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'); // for dom changed
+
+    // 如果是视频页面，初始化播放器
+    if (window.location.host !== 'space.bilibili.com') {
+      $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'); // for dom changed
+    }
     $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" href="#"></a>');
     $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" href="#"></a>');
   }
@@ -3467,7 +3471,7 @@ class Main {
         //show setting
         $('#bp_config').show();
         $('#bp_config').animate({
-          'opacity': '1'
+          opacity: '1'
         }, 300);
         scroll_scroll.hide();
       },

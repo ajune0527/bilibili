@@ -1929,7 +1929,7 @@
     }
     var main = class {
         constructor() {
-            logger.debug("\n %c bilibili-parse-download.user.js v2.6.3 adce35b %c https://github.com/injahow/user.js \n\n", "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            logger.debug("\n %c bilibili-parse-download.user.js v2.6.3 82323c5 %c https://github.com/injahow/user.js \n\n", "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         init() {
             initToolbar();
@@ -1962,7 +1962,7 @@
             }(`#${root_div.id}`), function initMessage(el) {
                 el && $(el)[0] ? $(el).append(message) : $("body").append(message);
             }(`#${root_div.id}`), user.lazyInit(), auth.checkLoginStatus(), check.refresh(), 
-            $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
+            "space.bilibili.com" !== window.location.host && $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
             $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" href="#"></a>'), 
             $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" href="#"></a>');
         }
