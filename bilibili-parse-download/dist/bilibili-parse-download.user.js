@@ -1870,8 +1870,8 @@
             $(`.${toolbar_class}`).each((function() {
                 const $detail = $(this), href = $detail.find(".bili-video-card__title a").attr("href"), match = href && href.match(/\/video\/([0-9A-Za-z]+)/);
                 if (match) {
-                    const bvId = match[1], $subtitle = $detail.find(".bili-video-card__subtitle"), $span = $("<span></span>").attr("id", bvId).attr("class", "bilibili_card_parse").text("#" + bvId).css("margin-left", "40px");
-                    $subtitle.append($span);
+                    const bvId = match[1], $subtitle = $detail.find(".bili-video-card__subtitle"), $i = $('<i class="vui_icon sic-BDC-arrow_up_triangle_fill " style="transform: rotate(180deg);margin-left: 5px;"></i>'), $span = $("<span></span>").attr("id", bvId).attr("class", "bilibili_card_parse").text(bvId).css("margin-left", "40px");
+                    $span.append($i), $subtitle.append($span);
                 }
             }));
             const key = "setting_btn", label = btn_list[key], svgHtml = svg_map[key].replaceAll("#757575", "currentColor"), $floatBtn = $(`\n      <div id="${key}" class="custom-float-btn" title="${label}">\n        ${svgHtml}\n        <span>${label}</span>\n      </div>\n    `);
@@ -1929,7 +1929,7 @@
     }
     var main = class {
         constructor() {
-            logger.debug("\n %c bilibili-parse-download.user.js v2.6.3 82323c5 %c https://github.com/injahow/user.js \n\n", "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            logger.debug("\n %c bilibili-parse-download.user.js v2.6.3 ea50f65 %c https://github.com/injahow/user.js \n\n", "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         init() {
             initToolbar();

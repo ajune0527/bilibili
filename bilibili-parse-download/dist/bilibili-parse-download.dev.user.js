@@ -3334,10 +3334,11 @@ function showVideoCardToolbar(toolbar_class) {
     if (match) {
       const bvId = match[1]; // e.g. BV1ViEczpEgN
       const $subtitle = $detail.find('.bili-video-card__subtitle');
-
+      const $i = $('<i class="vui_icon sic-BDC-arrow_up_triangle_fill " style="transform: rotate(180deg);margin-left: 5px;"></i>');
       // 创建新 span 元素
-      const $span = $('<span></span>').attr('id', bvId).attr('class', 'bilibili_card_parse').text('#' + bvId).css('margin-left', '40px'); // 可选，样式与原 span 间距保持一致
+      const $span = $('<span></span>').attr('id', bvId).attr('class', 'bilibili_card_parse').text(bvId).css('margin-left', '40px'); // 可选，样式与原 span 间距保持一致
 
+      $span.append($i);
       $subtitle.append($span);
     }
   });
@@ -3436,7 +3437,7 @@ function initToolbar() {
 class Main {
   constructor() {
     /* global JS_VERSION GIT_HASH */
-    logger.debug(`${'\n'} %c bilibili-parse-download.user.js v${"2.6.3"} ${"82323c5"} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    logger.debug(`${'\n'} %c bilibili-parse-download.user.js v${"2.6.3"} ${"ea50f65"} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   init() {
     initToolbar();
